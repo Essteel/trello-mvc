@@ -1,5 +1,8 @@
 from flask import Blueprint
 
+from db import db
+from models.card import Card, CardSchema
+
 cards_bp = Blueprint('cards', __name__, url_prefix = '/cards')
 
 @cards_bp.route('/')
@@ -11,7 +14,6 @@ def all_cards():
     # if not authorize():
     #     return {'error' : 'You must be an admin'}, 401
     # select * from cards
-    # stmt = db.select(Card).order_by(Card.priority.desc(), Card.title)
-    # cards = db.session.scalars(stmt)
-    # return CardSchema(many=True).dump(cards)
-    return 'all_cards route'
+    stmt = db.select(Card).order_by(Card.priority.desc(), Card.title)
+    cards = db.session.scalars(stmt)
+    return CardSchema(many=True).dump(cards)
