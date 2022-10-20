@@ -17,3 +17,9 @@ def all_cards():
     stmt = db.select(Card).order_by(Card.priority.desc(), Card.title)
     cards = db.session.scalars(stmt)
     return CardSchema(many=True).dump(cards)
+
+@cards_bp.route('/<int:id>/')
+def one_card(id):
+    stmt = db.select(Card).filter_by(id=id)
+    card = db.session.scalar(stmt)
+    return CardSchema().dump(card)
