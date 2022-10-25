@@ -1,20 +1,15 @@
 from flask import Blueprint, request
+from flask_jwt_extended import jwt_required
 
-from db import db
+from init import db
 from models.card import Card, CardSchema
 from datetime import date
+from controllers.auth_controller import authorize
 
 cards_bp = Blueprint('cards', __name__, url_prefix = '/cards')
 
 @cards_bp.route('/')
-# @jwt_required()
 def get_all_cards():
-    # user_id = get_jwt_identity() # get user from token
-    # stmt = db.select(User).filter_by(id=user_id) # query to db to get user with that id
-    # user = db.session.scalar(stmt) # set user
-    # if not authorize():
-    #     return {'error' : 'You must be an admin'}, 401
-    # select * from cards
     stmt = db.select(Card).order_by(Card.date.desc())
     cards = db.session.scalars(stmt)
     return CardSchema(many=True).dump(cards)
@@ -29,7 +24,9 @@ def get_one_card(id):
         return {'error': f'Card not found with id {id}'}, 404
 
 @cards_bp.route('/<int:id>/', methods=['DELETE'])
+@jwt_required()
 def delete_one_card(id):
+    authorize()
     stmt = db.select(Card).filter_by(id=id)
     card = db.session.scalar(stmt)
     if card:
@@ -40,6 +37,7 @@ def delete_one_card(id):
         return {'error': f'Card not found with id {id}'}, 404
 
 @cards_bp.route('/<int:id>/', methods=['PUT', 'PATCH'])
+@jwt_required()
 def update_one_card(id):
     stmt = db.select(Card).filter_by(id=id)
     card = db.session.scalar(stmt)
@@ -55,6 +53,7 @@ def update_one_card(id):
         return {'error': f'Card not found with id {id}'}, 404
 
 @cards_bp.route('/', methods = ['POST'])
+@jwt_required()
 def create_card():
     # Create a new card model instance
     card = Card(

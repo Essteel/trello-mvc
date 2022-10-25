@@ -1,5 +1,5 @@
 from flask import Flask
-from db import db, ma, bcrypt, jwt
+from init import db, ma, bcrypt, jwt
 from controllers.cards_controller import cards_bp
 from controllers.auth_controller import auth_bp
 import os
@@ -8,6 +8,10 @@ import os
 
 def create_app():
     app = Flask(__name__)
+
+    @app.errorhandler(401)
+    def unauthorized(err):
+        return {'error': str(err)}, 401
 
     @app.errorhandler(404)
     def not_found(err):
