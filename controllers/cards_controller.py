@@ -35,7 +35,7 @@ def delete_one_card(id):
     if card:
         db.session.delete(card)
         db.session.commit()
-        return {'message': f'Card "{card.title}" deleted successfully'}
+        return {'message': f"Card '{card.title}' deleted successfully"}
     else:
         return {'error': f'Card not found with id {id}'}, 404
 
