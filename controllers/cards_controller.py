@@ -28,15 +28,27 @@ def get_one_card(id):
     else:
         return {'error': f'Card not found with id {id}'}, 404
 
+@cards_bp.route('/<int:id>/', methods=['DELETE'])
+def delete_one_card(id):
+    stmt = db.select(Card).filter_by(id=id)
+    card = db.session.scalar(stmt)
+    if card:
+        db.session.delete(card)
+        db.session.commit()
+        return {'message': f'Card "{card.title}" deleted successfully'}
+    else:
+        return {'error': f'Card not found with id {id}'}, 404
+
 @cards_bp.route('/<int:id>/', methods=['PUT', 'PATCH'])
 def update_one_card(id):
     stmt = db.select(Card).filter_by(id=id)
     card = db.session.scalar(stmt)
     if card:
-        card.title = request.json['title'] or card.title
-        card.description = request.json['description'] or card.description
-        card.status = request.json['status'] or card.status
-        card.priority = request.json['priority'] or card.priority
+        # update card attribute to what is set or leave unchanged if no new value given (or statement = 'short circuiting)
+        card.title = request.json.get('title') or card.title
+        card.description = request.json.get('description') or card.description
+        card.status = request.json.get('status') or card.status
+        card.priority = request.json.get('priority') or card.priority
         db.session.commit()
         return CardSchema().dump(card)
     else:
