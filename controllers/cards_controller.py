@@ -1,5 +1,5 @@
 from flask import Blueprint, request
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from init import db
 from models.card import Card, CardSchema
@@ -61,7 +61,8 @@ def create_card():
         description = request.json['description'],
         date = date.today(),
         status = request.json['status'],
-        priority = request.json['priority']
+        priority = request.json['priority'],
+        user_id = get_jwt_identity()
     )
     # Add and commit card to the database
     db.session.add(card)
