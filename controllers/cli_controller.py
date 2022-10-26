@@ -31,38 +31,44 @@ def seed_db():
             password = bcrypt.generate_password_hash('12345').decode('utf-8')
         )
     ]
+    db.session.add_all(users)
+    db.session.commit()
+
     cards = [
         Card(
             title = 'Start the project',
             description = 'Stage 1 - Create the database',
             status = 'To Do',
             priority = 'High',
-            date = date.today()
+            date = date.today(),
+            user = users[0]
         ),
         Card(
             title = "SQLAlchemy",
             description = "Stage 2 - Integrate ORM",
             status = "Ongoing",
             priority = "High",
-            date = date.today()
+            date = date.today(),
+            user = users[0]
         ),
         Card(
             title = "ORM Queries",
             description = "Stage 3 - Implement several queries",
             status = "Ongoing",
             priority = "Medium",
-            date = date.today()
+            date = date.today(),
+            user = users[1]
         ),
         Card(
             title = "Marshmallow",
             description = "Stage 4 - Implement Marshmallow to jsonify models",
             status = "Ongoing",
             priority = "Medium",
-            date = date.today()
+            date = date.today(),
+            user = users[1]
         )
     ]
 
     db.session.add_all(cards)
-    db.session.add_all(users)
     db.session.commit()
     print('Tables seeded')
