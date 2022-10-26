@@ -4,6 +4,7 @@ from init import db, bcrypt
 from datetime import date
 from models.card import Card
 from models.user import User
+from models.comment import Comment
 
 db_commands = Blueprint('db', __name__)
 
@@ -68,7 +69,29 @@ def seed_db():
             user = users[1]
         )
     ]
-
     db.session.add_all(cards)
+    db.session.commit()
+
+    comments = [
+        Comment(
+            message = 'Comment 1',
+            user = users[1],
+            card = cards[0],
+            date = date.today()
+        ),
+        Comment(
+            message = 'Comment 2',
+            user = users[0],
+            card = cards[0],
+            date = date.today()
+        ),
+        Comment(
+            message = 'Comment 3',
+            user = users[0],
+            card = cards[2],
+            date = date.today()
+        )
+    ]
+    db.session.add_all(comments)
     db.session.commit()
     print('Tables seeded')

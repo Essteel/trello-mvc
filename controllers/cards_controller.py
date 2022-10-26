@@ -3,6 +3,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from init import db
 from models.card import Card, CardSchema
+from models.comment import Comment, CommentSchema
 from datetime import date
 from controllers.auth_controller import authorize
 
@@ -68,3 +69,23 @@ def create_card():
     db.session.add(card)
     db.session.commit()
     return CardSchema().dump(card), 201
+
+@cards_bp.route('/<int:card_id>/comments/', methods = ['POST'])
+@jwt_required()
+def create_comment(card_id):
+    stmt = db.select(Card).filter_by(id=card_id)
+    card = db.session.scalar(stmt)
+    if card:
+        # Create a new comment model instance
+        comment = Comment(
+            message = request.json['message'],
+            user_id = get_jwt_identity(),
+            card_id = card_id,
+            date = date.today()
+        )
+        # Add and commit comment to the database
+        db.session.add(comment)
+        db.session.commit()
+        return CommentSchema().dump(comment), 201
+    else:
+        return {'error': f'Card not found with id {id}'}
