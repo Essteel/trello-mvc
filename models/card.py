@@ -1,5 +1,6 @@
 from init import db, ma
 from marshmallow import fields
+from marshmallow.validate import Length
 
 class Card(db.Model):
     __tablename__ = 'cards'
@@ -19,6 +20,7 @@ class Card(db.Model):
 class CardSchema(ma.Schema):
     user = fields.Nested('UserSchema', only=['name', 'email'])
     comments = fields.List(fields.Nested('CommentSchema', exclude=['card']))
+    title = fields.String(required=True, validate=Length(min=2))
     class Meta:
         fields = ('id', 'title', 'description', 'date', 'status', 'priority', 'user', 'comments')
         ordered = True

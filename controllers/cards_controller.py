@@ -57,12 +57,13 @@ def update_one_card(id):
 @jwt_required()
 def create_card():
     # Create a new card model instance
+    data = CardSchema().load(request.json) # Load through schema to get schema validation
     card = Card(
-        title = request.json['title'],
-        description = request.json['description'],
+        title = data['title'],
+        description = data['description'],
         date = date.today(),
-        status = request.json['status'],
-        priority = request.json['priority'],
+        status = data['status'],
+        priority = data['priority'],
         user_id = get_jwt_identity()
     )
     # Add and commit card to the database
